@@ -12,13 +12,21 @@
 			<div id="title">Nursery Coder</div>
 		</header>
 		<main>
-			<section id="landing" class="bg-grad">
-				<h2>Rapid-Fire Dev Quiz</h2>
-				<p class="lead">A fun quiz for coders. Answer 5 rapid-fire questions, each with a 12-second timer. Test your dev basics and get a coding fact at the end!</p>
-				<button class="btn">Start Quiz</button>
-			</section>
-			<section id="deck"></section>
-		</main>
+            <section id="landing" class="bg-grad">
+            <h2>Rapid-Fire Dev Quiz</h2>
+            <p class="lead">
+            Select a category to start. Answer 5 rapid-fire questions,
+            each with a 12-second timer.
+            </p>
+            <div class="options" style="margin-bottom: 1rem;">
+            <button class="option-btn" onclick="startQuiz(18)">Computers</button>
+            <button class="option-btn" onclick="startQuiz(31)">Anime & Manga</button>
+            <button class="option-btn" onclick="startQuiz(11)">Film</button>
+            <button class="option-btn" onclick="startQuiz(0)">Random</button>
+            </div>
+            </section>
+            <section id="deck"></section>
+            </main>
 		<script src="script.js"></script>
 	</body>
 </html>

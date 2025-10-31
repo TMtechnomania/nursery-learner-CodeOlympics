@@ -1,41 +1,5 @@
-const questions = [
-{ question: "What does HTML stand for?", options: ["HyperText Markup Language", "High-Level Text Machine Language", "Hyperlinks and Text Markup", "Home Tool Markup Language"], answer: 0 },
-{ question: "Which property is used to change the background color in CSS?", options: ["color", "bgcolor", "background-color", "background"], answer: 2 },
-{ question: "What is the correct syntax for a JavaScript arrow function?", options: ["function = () => {}", "const func = () => {}", "const func = function() {}", "() => {} = func"], answer: 1 },
-{ question: "Which of these is NOT a JavaScript data type?", options: ["String", "Boolean", "Alert", "Number"], answer: 2 },
-{ question: "What does 'DOM' stand for?", options: ["Document Object Model", "Data Object Model", "Desktop Oriented-Model", "Document Order Model"], answer: 0 },
-{ question: "How do you select an element with id 'demo' in CSS?", options: [".demo", "demo", "#demo", "*demo"], answer: 2 },
-{ question: "Which HTML tag is used to create a hyperlink?", options: ["<link>", "<href>", "<a>", "<hyper>"], answer: 2 },
-{ question: "Which tag defines an ordered list?", options: ["<ul>", "<ol>", "<li>", "<list>"], answer: 1 },
-{ question: "How do you make text bold in CSS?", options: ["font-weight: bold;", "text-style: bold;", "bold: true;", "font: bold;"], answer: 0 },
-{ question: "What are the 4 parts of the CSS Box Model, in order from inside out?", options: ["Margin, Border, Padding, Content", "Content, Padding, Border, Margin", "Content, Margin, Padding, Border", "Padding, Content, Border, Margin"], answer: 1 },
-{ question: "How do you declare a JavaScript variable that cannot be reassigned?", options: ["let", "var", "const", "static"], answer: 2 },
-{ question: "Which method adds a new element to the end of an array?", options: [".add()", ".push()", ".append()", ".end()"], answer: 1 },
-{ question: "What does the `===` operator check for in JavaScript?", options: ["Value only", "Type only", "Value and Type", "Assignment"], answer: 2 },
-{ question: "What does HTTP stand for?", options: ["Hypertext Transfer Protocol", "Hyperlink Text Transfer", "Home-Text Transfer Protocol", "Hypertext Test Protocol"], answer: 0 },
-{ question: "What does a 404 error mean?", options: ["Server Error", "File Not Found", "Access Denied", "OK"], answer: 1 },
-];
-const facts = [
-"The first computer programmer was Ada Lovelace, an English mathematician.",
-"The first computer mouse was invented by Douglas Engelbart in 1964 and was made of wood.",
-"The first 1GB hard drive was announced in 1980, weighed 550 pounds, and cost $40,000.",
-"The programming language 'Python' was named after the British comedy group 'Monty Python'.",
-"JavaScript was created in just 10 days by Brendan Eich at Netscape.",
-"The first computer 'bug' was a literal moth found trapped in a relay of the Harvard Mark II computer.",
-"The world's first website (info.cern.ch) is still online today.",
-"The QWERTY keyboard layout was designed to slow typists down to prevent typewriter jams.",
-"Google's original name was 'Backrub', based on its analysis of 'backlinks'.",
-"The average smartphone has more computing power than the Apollo 11 lunar module.",
-"The 'img' tag in HTML was first proposed in 1993 by Marc Andreessen.",
-"The term 'Wi-Fi' doesn't actually stand for anything. It was a marketing term created to sound like 'Hi-Fi'.",
-"It is estimated that 90% of the world's data was created in the last two years alone.",
-"In 1936, Russian scientists built a computer that ran on water, called a 'Water Integrator'.",
-"The 'Alt' key on your keyboard stands for 'Alternate'.",
-"Amazon was originally called 'Cadabra', as in 'abracadabra'."
-];
 const deck = document.getElementById("deck"),
 landing = document.getElementById("landing"),
-startButton = document.querySelector("#landing .btn"),
 backButton = document.getElementById("back");
 let set = [],
 i = 0,
@@ -50,12 +14,44 @@ const r = Math.floor(Math.random() * (j + 1));
 }
 return a;
 }
-function startQuiz() {
+function decode(str) {
+const txt = document.createElement("textarea");
+txt.innerHTML = str;
+return txt.value;
+}
+async function fetchQuestions(cat) {
+let url = `https://opentdb.com/api.php?amount=5&type=multiple`;
+if (cat > 0) {
+url += `&category=${cat}`;
+}
+try {
+const res = await fetch(url);
+const data = await res.json();
+return data.results.map((q) => {
+const options = [...q.incorrect_answers.map(decode)];
+const answer = Math.floor(Math.random() * 4);
+options.splice(answer, 0, decode(q.correct_answer));
+return {
+question: decode(q.question),
+options: options,
+answer: answer,
+};
+});
+} catch (err) {
+return null;
+}
+}
+async function startQuiz(cat = 0) {
 landing.style.display = "none";
+set = await fetchQuestions(cat);
+if (!set || set.length === 0) {
+alert("Error fetching questions. Please try again.");
+resetGame();
+return;
+}
 deck.style.display = "block";
 backButton.style.display = "block";
 deck.innerHTML = "";
-set = shuffle([...questions]).slice(0, 5);
 i = 0;
 score = 0;
 done = false;
@@ -139,13 +135,25 @@ const f = document.createElement("div");
 f.className = "card";
 f.innerHTML = `
 <div id="close" onclick="resetGame()">×</div>
-<h3>💡 Fun Coding Fact</h3>
+<h3>💡 Coding Quote</h3>
 <div class="meta" style="font-size: 1rem; margin-top: 1rem;">
-${facts[Math.floor(Math.random() * facts.length)]}
+Loading...
 </div>
 <button class="btn" onclick="resetGame()">Play Again</button>`;
 deck.append(r);
 deck.append(f);
+loadDynamicFact(f);
+}
+function loadDynamicFact(card) {
+const meta = card.querySelector(".meta");
+fetch("https://api.quotable.io/random?tags=technology,programming")
+.then((res) => res.json())
+.then((data) => {
+meta.innerHTML = `"${data.content}"<br><br><em>- ${data.author}</em>`;
+})
+.catch(() => {
+meta.textContent = "The first computer 'bug' was a literal moth found trapped in a relay of the Harvard Mark II computer.";
+});
 }
 function dismissCard(el) {
 const card = el.closest(".card");
@@ -243,5 +251,4 @@ arrange();
 );
 }, 300);
 }
-startButton.addEventListener("click", startQuiz);
 backButton.addEventListener("click", resetGame);

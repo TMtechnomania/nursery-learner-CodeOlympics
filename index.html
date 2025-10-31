@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Nursery Coder</title>
+	</head>
+	<body>
+		<style>
+			* {
+				border-radius: 0;
+				border: none;
+				box-sizing: border-box;
+				margin: 0;
+				outline: none;
+				padding: 0;
+				-webkit-user-select: none;
+				user-select: none;
+			}
+			:root {
+				--main-color: #bcec33;
+				--correct: #aee634;
+				--correct-light: #d4f48c;
+				--wrong: #e3602a;
+				--wrong-light: #f4a78c;
+			}
+			body {
+				font-family: system-ui, -apple-system, BlinkMacSystemFont,
+					"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+					"Helvetica Neue", sans-serif;
+				background: #08090b;
+				color: var(--main-color);
+			}
+			header {
+				position: relative;
+				width: 100%;
+				height: 50px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			#back {
+				position: absolute;
+				left: 16px;
+				font-size: 32px;
+				cursor: pointer;
+			}
+			#title {
+				font-size: 16px;
+				font-weight: 500;
+			}
+			main, section {
+				padding: 16px;
+			}
+			.bg-grad {
+				background: linear-gradient(
+					60deg,
+					#0f1113 32%,
+					#071d04,
+					#0f1113
+				);
+				border-radius: 16px;
+				height: 320px;
+			}
+			.btn-primary {
+				background: var(--main-color);
+				color: #08090b;
+				border-radius: 32px;
+				padding: 10px 20px;
+				font-size: 16px;
+				font-weight: 500;
+				cursor: pointer;
+				transition: background 0.3s ease;
+			}
+			.btn-primary:hover {
+				background: #d4ff5d;
+			}
+			.btn-wide {
+				width: 100%;
+			}
+		</style>
+		<header>
+			<div id="back">‹</div>
+			<div id="title">Nursery Coder</div>
+		</header>
+		<main>
+			<section id="landing" class="bg-grad" style="height: calc(100vh - 100px);">
+				<h2 style="font-weight: 500">
+					Welcome to Nursery Coder!
+				</h2>
+				<p style="margin-top: 16px;">
+					This is a simple quiz game designed for coders and learners.
+					Test your knowledge and improve your skills in a fun and
+					interactive way!
+				</p>
+				<button class="btn-primary btn-wide" style="margin-top: 100%;" onclick="startQuiz()">
+					Start Quiz
+				</button>
+			</section>
+            <section id="deck"></section>
+		</main>
+	</body>
+	<script>
+		const questions = [
+			{
+				question: "What does HTML stand for?",
+				options: [
+					"Hyper Text Markup Language",
+					"Home Tool Markup Language",
+					"Hyperlinks and Text Markup Language",
+					"Hyperlinking Text Marking Language"
+				],
+				answer: 0
+			},
+			{
+				question: "Which language is used for styling web pages?",
+				options: [
+					"HTML",
+					"JQuery",
+					"CSS",
+					"XML"
+				],
+				answer: 2
+			},
+			{
+				question: "Which is not a JavaScript Framework?",
+				options: [
+					"Python Script",
+					"JQuery",
+					"Django",
+					"NodeJS"
+				],
+				answer: 2
+			},
+			{
+				question: "Which tag is used to display an image in HTML?",
+				options: [
+					"<img>",
+					"<image>",
+					"<figure>",
+					"<pic>"
+				],
+				answer: 0
+			},
+			{
+				question: "Which HTML element is used for creating a hyperlink?",
+				options: [
+					"<link>",
+					"<a>",
+					"<href>",
+					"<anchor>"
+				],
+				answer: 1
+			},
+			{
+				question: "What does CSS stand for?",
+				options: [
+					"Computer Style Sheets",
+					"Cascading Style Sheets",
+					"Creative Style Sheets",
+					"Colorful Style Sheets"
+				],
+				answer: 1
+			},
+			{
+				question: "Which symbol is used for single-line comments in JavaScript?",
+				options: [
+					"<!-- -->",
+					"//",
+					"/* */",
+					"Both // and /* */"
+				],
+				answer: 3
+			},
+			{
+				question: "Which company originally developed JavaScript?",
+				options: [
+					"Microsoft",
+					"Netscape",
+					"Google",
+					"Sun Microsystems"
+				],
+				answer: 1
+			},
+			{
+				question: "Which HTML element is used to define an unordered list?",
+				options: [
+					"<ol>",
+					"<ul>",
+					"<li>",
+					"<list>"
+				],
+				answer: 1
+			},
+			{
+				question: "Which attribute is used to uniquely identify an HTML element?",
+				options: [
+					"class",
+					"id",
+					"name",
+					"type"
+				],
+				answer: 1
+			},
+			{
+				question: "What does DOM stand for?",
+				options: [
+					"Document Object Model",
+					"Data Object Model",
+					"Digital Order Model",
+					"Document Oriented Mode"
+				],
+				answer: 0
+			},
+			{
+				question: "Which of the following is a version control system?",
+				options: [
+					"Docker",
+					"Git",
+					"Jenkins",
+					"Webpack"
+				],
+				answer: 1
+			},
+			{
+				question: "Which operator is commonly used to assign a value to a variable?",
+				options: [
+					"==",
+					"=",
+					"===",
+					"=>"
+				],
+				answer: 1
+			},
+			{
+				question: "Which HTML tag defines the title shown in the browser tab?",
+				options: [
+					"<meta>",
+					"<title>",
+					"<head>",
+					"<h1>"
+				],
+				answer: 1
+			},
+			{
+				question: "Which file extension is commonly used for JavaScript files?",
+				options: [
+					".js",
+					".java",
+					".jsx",
+					".json"
+				],
+				answer: 0
+			}
+		];
+        const landing = document.getElementById("landing");
+        const deck = document.getElementById("deck");
+        
+
+	</script>
+</html>

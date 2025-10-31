@@ -2,260 +2,399 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 		<title>Nursery Coder</title>
-	</head>
-	<body>
 		<style>
 			* {
-				border-radius: 0;
-				border: none;
 				box-sizing: border-box;
 				margin: 0;
-				outline: none;
 				padding: 0;
-				-webkit-user-select: none;
-				user-select: none;
+				font-family: "Segoe UI", system-ui, sans-serif;
 			}
 			:root {
-				--main-color: #bcec33;
+				--main: #bcec33;
+				--bg: #090b0d;
+				--blur-bg: rgba(255, 255, 255, 0.08);
 				--correct: #aee634;
-				--correct-light: #d4f48c;
 				--wrong: #e3602a;
-				--wrong-light: #f4a78c;
+				/* border radius scale (max 1rem) */
+				--radius-outer: 1rem; /* largest */
+				--radius-mid: 0.75rem; /* nested */
+				--radius-inner: 0.5rem; /* deepest */
 			}
 			body {
-				font-family: system-ui, -apple-system, BlinkMacSystemFont,
-					"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-					"Helvetica Neue", sans-serif;
-				background: #08090b;
-				color: var(--main-color);
+				background: var(--bg);
+				color: var(--main);
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
 			}
 			header {
-				position: relative;
-				width: 100%;
-				height: 50px;
+				height: 3.5rem; /* ~56px */
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				position: relative;
 			}
 			#back {
 				position: absolute;
-				left: 16px;
-				font-size: 32px;
+				left: 1rem; /* 16px */
+				font-size: 1.75rem; /* 28px */
 				cursor: pointer;
 			}
 			#title {
-				font-size: 16px;
-				font-weight: 500;
+				font-weight: 600;
+				font-size: 1rem; /* ~16px (rounded) */
 			}
-			main, section {
-				padding: 16px;
+			main {
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0.75rem; /* 12px */
 			}
 			.bg-grad {
-				background: linear-gradient(
-					60deg,
-					#0f1113 32%,
-					#071d04,
-					#0f1113
-				);
-				border-radius: 16px;
-				height: 320px;
+				background: linear-gradient(45deg, #111511 30%, #1d2507, #040a03);
+				border-radius: var(--radius-outer);
+				height: 100%;
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				color: var(--main);
+				text-align: center;
+				padding: 1.25rem; /* 20px */
 			}
-			.btn-primary {
-				background: var(--main-color);
-				color: #08090b;
-				border-radius: 32px;
-				padding: 10px 20px;
-				font-size: 16px;
-				font-weight: 500;
+
+			/* moved from inline style on landing paragraph */
+			.lead {
+				margin: 1rem 0 2.5rem;
+				opacity: 0.9;
+				font-size: 1rem;
+			}
+			.btn {
+				background: var(--main);
+				color: #000;
+				font-weight: 600;
+				padding: 1rem 1.5rem; /* ~16px 24px */
+				border-radius: var(--radius-mid);
 				cursor: pointer;
-				transition: background 0.3s ease;
+				transition: all 0.3s;
+				width: 80%;
+				max-width: 18.75rem; /* 300px */
 			}
-			.btn-primary:hover {
+			.btn:hover {
 				background: #d4ff5d;
 			}
-			.btn-wide {
+			#deck {
+				display: none;
+				position: relative;
 				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			.card {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 100%;
+				height: 80%;
+				border-radius: var(--radius-mid);
+				background: linear-gradient(45deg, #111511aa 30%, #1d2507aa, #040a03aa);
+				-webkit-backdrop-filter: blur(1rem);
+				backdrop-filter: blur(1rem); /* 16px */
+				box-shadow: 0 -0.75rem 2.5rem rgba(0, 0, 0, 0.4); /* -12px 40px */
+				padding: 1rem; /* 16px */
+				color: var(--main);
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				transition: transform 1s cubic-bezier(0.25, 0.9, 0.2, 1),
+					opacity 1s;
+			}
+			.card h3 {
+				font-size: 1.25rem; /* 20px */
+				font-weight: 600;
+				margin-bottom: 0.5rem; /* 8px */
+				text-align: left;
+			}
+			.options {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem; /* 12px */
+			}
+			.option-btn {
+				background: transparent;
+				border: 1px solid currentColor;
+				border-radius: var(--radius-inner);
+				padding: 0.75rem 1rem; /* 12px 16px */
+				color: var(--main);
+				text-align: left;
+				cursor: pointer;
+				font-size: 1rem; /* 16px */
+				transition: all 0.25s ease;
+			}
+			.option-btn:hover {
+				background: rgba(255, 255, 255, 0.12);
+			}
+			.option-btn.correct {
+				background: var(--correct);
+				color: #000;
+			}
+			.option-btn.wrong {
+				background: var(--wrong);
+				color: #fff;
+			}
+			.pos-top {
+				z-index: 3;
+				transform: translate(-50%, -50%) scale(1);
+			}
+			.pos-mid {
+				z-index: 2;
+				transform: translate(-50%, -40%) scale(0.9);
+			}
+			.pos-bottom {
+				z-index: 1;
+				transform: translate(-50%, -30%) scale(0.8);
+			}
+			.fly-up {
+				transform: translate(-50%, -180%) scale(0.9);
+				opacity: 0;
+			}
+			.meta {
+				font-size: 0.75rem; /* 12px */
+				opacity: 0.9;
+				margin-top: 0.75rem; /* 12px */
+				text-align: left;
+			}
+			#close {
+				position: absolute;
+				top: 1rem; /* ~16px */
+				right: 1.25rem; /* 20px */
+				font-size: 1.75rem; /* ~28px */
+				color: var(--main);
+				cursor: pointer;
+			}
+			@media (max-width: 600px) {
+				.card {
+					height: 85%;
+					width: 90%;
+					border-radius: var(--radius-mid);
+				}
 			}
 		</style>
+	</head>
+	<body>
 		<header>
 			<div id="back">‹</div>
 			<div id="title">Nursery Coder</div>
 		</header>
 		<main>
-			<section id="landing" class="bg-grad" style="height: calc(100vh - 100px);">
-				<h2 style="font-weight: 500">
-					Welcome to Nursery Coder!
-				</h2>
-				<p style="margin-top: 16px;">
-					This is a simple quiz game designed for coders and learners.
-					Test your knowledge and improve your skills in a fun and
-					interactive way!
+			<section id="landing" class="bg-grad">
+				<h2>Welcome to Nursery Coder!</h2>
+				<p class="lead">
+					A fun quick quiz for coders and learners. Test your dev
+					basics and get a fun coding fact at the end!
 				</p>
-				<button class="btn-primary btn-wide" style="margin-top: 100%;" onclick="startQuiz()">
-					Start Quiz
-				</button>
+				<button class="btn" onclick="startQuiz()">Start Quiz</button>
 			</section>
-            <section id="deck"></section>
+			<section id="deck"></section>
 		</main>
-	</body>
-	<script>
-		const questions = [
-			{
-				question: "What does HTML stand for?",
-				options: [
-					"Hyper Text Markup Language",
-					"Home Tool Markup Language",
-					"Hyperlinks and Text Markup Language",
-					"Hyperlinking Text Marking Language"
-				],
-				answer: 0
-			},
-			{
-				question: "Which language is used for styling web pages?",
-				options: [
-					"HTML",
-					"JQuery",
-					"CSS",
-					"XML"
-				],
-				answer: 2
-			},
-			{
-				question: "Which is not a JavaScript Framework?",
-				options: [
-					"Python Script",
-					"JQuery",
-					"Django",
-					"NodeJS"
-				],
-				answer: 2
-			},
-			{
-				question: "Which tag is used to display an image in HTML?",
-				options: [
-					"<img>",
-					"<image>",
-					"<figure>",
-					"<pic>"
-				],
-				answer: 0
-			},
-			{
-				question: "Which HTML element is used for creating a hyperlink?",
-				options: [
-					"<link>",
-					"<a>",
-					"<href>",
-					"<anchor>"
-				],
-				answer: 1
-			},
-			{
-				question: "What does CSS stand for?",
-				options: [
-					"Computer Style Sheets",
-					"Cascading Style Sheets",
-					"Creative Style Sheets",
-					"Colorful Style Sheets"
-				],
-				answer: 1
-			},
-			{
-				question: "Which symbol is used for single-line comments in JavaScript?",
-				options: [
-					"<!-- -->",
-					"//",
-					"/* */",
-					"Both // and /* */"
-				],
-				answer: 3
-			},
-			{
-				question: "Which company originally developed JavaScript?",
-				options: [
-					"Microsoft",
-					"Netscape",
-					"Google",
-					"Sun Microsystems"
-				],
-				answer: 1
-			},
-			{
-				question: "Which HTML element is used to define an unordered list?",
-				options: [
-					"<ol>",
-					"<ul>",
-					"<li>",
-					"<list>"
-				],
-				answer: 1
-			},
-			{
-				question: "Which attribute is used to uniquely identify an HTML element?",
-				options: [
-					"class",
-					"id",
-					"name",
-					"type"
-				],
-				answer: 1
-			},
-			{
-				question: "What does DOM stand for?",
-				options: [
-					"Document Object Model",
-					"Data Object Model",
-					"Digital Order Model",
-					"Document Oriented Mode"
-				],
-				answer: 0
-			},
-			{
-				question: "Which of the following is a version control system?",
-				options: [
-					"Docker",
-					"Git",
-					"Jenkins",
-					"Webpack"
-				],
-				answer: 1
-			},
-			{
-				question: "Which operator is commonly used to assign a value to a variable?",
-				options: [
-					"==",
-					"=",
-					"===",
-					"=>"
-				],
-				answer: 1
-			},
-			{
-				question: "Which HTML tag defines the title shown in the browser tab?",
-				options: [
-					"<meta>",
-					"<title>",
-					"<head>",
-					"<h1>"
-				],
-				answer: 1
-			},
-			{
-				question: "Which file extension is commonly used for JavaScript files?",
-				options: [
-					".js",
-					".java",
-					".jsx",
-					".json"
-				],
-				answer: 0
+		<script>
+			const questions = [
+				{
+					question: "What does HTML stand for?",
+					options: [
+						"Hyper Text Markup Language",
+						"Home Tool Markup Language",
+						"Hyperlinks and Text Markup Language",
+						"Hyperlinking Text Marking Language",
+					],
+					answer: 0,
+				},
+				{
+					question: "Which language is used for styling web pages?",
+					options: ["HTML", "JQuery", "CSS", "XML"],
+					answer: 2,
+				},
+				{
+					question: "Which is not a JavaScript Framework?",
+					options: ["Python Script", "JQuery", "Django", "NodeJS"],
+					answer: 2,
+				},
+				{
+					question: "Which tag displays an image in HTML?",
+					options: ["<img>", "<image>", "<figure>", "<pic>"],
+					answer: 0,
+				},
+				{
+					question: "Which HTML element creates a hyperlink?",
+					options: ["<link>", "<a>", "<href>", "<anchor>"],
+					answer: 1,
+				},
+				{
+					question: "What does CSS stand for?",
+					options: [
+						"Computer Style Sheets",
+						"Cascading Style Sheets",
+						"Creative Style Sheets",
+						"Colorful Style Sheets",
+					],
+					answer: 1,
+				},
+				{
+					question: "Which symbol is for single-line comments in JS?",
+					options: ["<!-- -->", "//", "/* */", "Both // and /* */"],
+					answer: 3,
+				},
+				{
+					question: "Which company developed JavaScript?",
+					options: [
+						"Microsoft",
+						"Netscape",
+						"Google",
+						"Sun Microsystems",
+					],
+					answer: 1,
+				},
+				{
+					question: "Which defines an unordered list?",
+					options: ["<ol>", "<ul>", "<li>", "<list>"],
+					answer: 1,
+				},
+				{
+					question: "What does DOM stand for?",
+					options: [
+						"Document Object Model",
+						"Data Object Model",
+						"Digital Order Model",
+						"Document Oriented Mode",
+					],
+					answer: 0,
+				},
+				{
+					question: "Which is a version control system?",
+					options: ["Docker", "Git", "Jenkins", "Webpack"],
+					answer: 1,
+				},
+				{
+					question: "Operator for assignment?",
+					options: ["==", "=", "===", "=>"],
+					answer: 1,
+				},
+				{
+					question: "File extension for JavaScript?",
+					options: [".js", ".java", ".jsx", ".json"],
+					answer: 0,
+				},
+				{
+					question: "HTML tag for browser title?",
+					options: ["<meta>", "<title>", "<head>", "<h1>"],
+					answer: 1,
+				},
+				{
+					question: "What year was JavaScript created?",
+					options: ["1995", "1999", "2001", "2005"],
+					answer: 0,
+				},
+			];
+			const facts = [
+				"The first computer 'bug' was an actual moth!",
+				"JavaScript was created in just 10 days!",
+				"Ada Lovelace is considered the first programmer.",
+				"Linux (1991) boosted open source revolution.",
+				"The first high-level language was Fortran (1957).",
+			];
+			const deck = document.getElementById("deck"),
+				landing = document.getElementById("landing");
+			let set = [],
+				i = 0,
+				score = 0,
+				done = false;
+			function shuffle(a) {
+				for (let j = a.length - 1; j > 0; j--) {
+					const r = Math.floor(Math.random() * (j + 1));
+					[a[j], a[r]] = [a[r], a[j]];
+				}
+				return a;
 			}
-		];
-        const landing = document.getElementById("landing");
-        const deck = document.getElementById("deck");
-        
-
-	</script>
+			(function startQuiz() {
+				landing.style.display = "none";
+				deck.style.display = "block";
+				deck.innerHTML = "";
+				set = shuffle(questions).slice(0, 6);
+				i = 0;
+				score = 0;
+				done = false;
+				for (let k = 0; k < 3; k++) appendCard();
+				arrange();
+			}())
+			function appendCard() {
+				if (i >= set.length && !done) {
+					appendResultFact();
+					done = true;
+					return;
+				}
+				if (i >= set.length) return;
+				const q = set[i++];
+				const c = document.createElement("div");
+				c.className = "card";
+				c.innerHTML = `<h3>${q.question}</h3><div class="options"></div>`;
+				q.options.forEach((o, n) => {
+					const b = document.createElement("button");
+					b.className = "option-btn";
+					b.textContent = o;
+					b.onclick = (e) => checkAns(e, q.answer, c, n);
+					c.querySelector(".options").appendChild(b);
+				});
+				deck.appendChild(c);
+			}
+			function checkAns(e, ans, card, n) {
+				if (!card.classList.contains("pos-top")) return;
+				const btns = card.querySelectorAll(".option-btn");
+				btns.forEach((b, ix) => {
+					b.disabled = true;
+					if (ix === ans) b.classList.add("correct");
+					if (ix === n && n !== ans) b.classList.add("wrong");
+				});
+				if (n === ans) score++;
+				setTimeout(() => {
+					card.classList.add("fly-up");
+					card.addEventListener("transitionend", () => {
+						card.remove();
+						appendCard();
+						arrange();
+					});
+				}, 700);
+			}
+			function appendResultFact() {
+				const r = document.createElement("div");
+				r.className = "card";
+				r.innerHTML = `<div id="close" onclick="resetGame()">×</div><h3>Your Score</h3>
+  <div class="meta">You got ${score} of ${set.length} correct!</div>`;
+				const f = document.createElement("div");
+				f.className = "card";
+				f.innerHTML = `<h3>Fun Coding Fact</h3><div class="meta">${
+					facts[Math.floor(Math.random() * facts.length)]
+				}</div>`;
+				deck.append(r);
+				deck.append(f);
+			}
+			function arrange() {
+				const cards = [...deck.querySelectorAll(".card")];
+				cards.forEach((c) =>
+					c.classList.remove("pos-top", "pos-mid", "pos-bottom"),
+				);
+				if (cards[0]) cards[0].classList.add("pos-top");
+				if (cards[1]) cards[1].classList.add("pos-mid");
+				if (cards[2]) cards[2].classList.add("pos-bottom");
+			}
+			function resetGame() {
+				deck.style.display = "none";
+				landing.style.display = "flex";
+			}
+		</script>
+	</body>
 </html>
